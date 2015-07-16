@@ -4,10 +4,13 @@ var request = require('request'),
     http = require('http'),
     enableDestroy = require('server-destroy');;
 
-var mockServer = function(cb) {
+var mockServer = function(cb, dontAutoclose) {
     var oneTimeServer = http.createServer(function (req, resp) {
-            cb(req, resp);
+        cb(req, resp, oneTimeServer);
+
+        if (!dontAutoclose) {
             oneTimeServer.destroy();
+        }
     });
 
     oneTimeServer.listen(3001);
@@ -80,6 +83,23 @@ describe("Service is reachable", function() {
             subject.get('/').end(function(err, res, body) {
                 expect(body).not.toContain("should be removed");
                 expect(body).toBe("should stay");
+                done();
+            });
+        });
+
+
+        it("even if the proxy needs much time, the template server should respond with the allready received part", function(done) {
+            mockServer(function (req, res, server) {
+                res.write("Some Text...");
+                setTimeout(function() {
+                    res.end("Some more Text");
+                    server.destroy();
+                }, 3000);
+            }, true);
+
+            subject.get('/').end(function(err, res, body) {
+                var expected = "Some Text...";
+                expect(body).toBe(expected);
                 done();
             });
         });
