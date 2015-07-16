@@ -57,13 +57,14 @@ describe("Service is reachable", function() {
                 resp.end(
                     "<!--@@begin-header@@-->" +
                     "should be removed" +
-                    "<!--@@end-header@@—>"
+                    "<!--@@end-header@@-->" +
+                    "should stay"
                 );
             });
 
             subject.get('/').end(function(err, res, body) {
                 expect(body).not.toContain("should be removed");
-                expect(body).toBe("");
+                expect(body).toBe("should stay");
                 done();
             });
         });
@@ -72,12 +73,13 @@ describe("Service is reachable", function() {
             mockServer(function (req, resp) {
                 resp.write("<!--@@begin-header@@-->");
                 resp.write("should be removed");
-                resp.end("<!--@@end-header@@—>");
+                resp.write("<!--@@end-header@@-->");
+                resp.end("should stay");
             });
 
             subject.get('/').end(function(err, res, body) {
                 expect(body).not.toContain("should be removed");
-                expect(body).toBe("");
+                expect(body).toBe("should stay");
                 done();
             });
         });
