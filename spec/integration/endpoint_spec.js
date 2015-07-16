@@ -1,7 +1,19 @@
 var request = require('request'),
     hippie = require('hippie'),
     server = require('../../lib/app.js'),
-    http = require('http');
+    http = require('http'),
+    enableDestroy = require('server-destroy');;
+
+var mockServer = function(cb) {
+    var oneTimeServer = http.createServer(function (req, resp) {
+            cb(req, resp);
+            oneTimeServer.destroy();
+    });
+
+    oneTimeServer.listen(3001);
+
+    enableDestroy(oneTimeServer);
+}
 
 describe("Service is reachable", function() {
 
@@ -16,23 +28,21 @@ describe("Service is reachable", function() {
         });
     });
 
-    it("returns the google page if it is set as proxied Url", function(done) {
-        server.setProxyUrl("https://google.de");
+    it("returns plain page if it is set as proxied Url", function(done) {
+        mockServer(function(req, res) {
+            res.end("<head><title>Foo</title></head><body>Bar</body>");
+        });
+
+        server.setProxyUrl("http://localhost:3001");
         subject.get('/').end(function(err, res, body) {
-            expect(body).toContain("Google");
+            expect(body).toContain("<body>Bar</body>");
             server.setProxyUrl(undefined);
             done();
         });
     });
 
     describe("There is a proxied server running with replacement tags", function() {
-        var mockedServer = http.createServer(function (req, resp) {
-            resp.write("<!--@@begin-header@@-->");
-            resp.write("should be removed");
-            resp.end("<!--@@end-header@@—>");
-
-        });
-        mockedServer.listen(3001);
+        var mockedServer = 
 
         beforeEach(function() {
             server.setProxyUrl("http://localhost:3001");
@@ -42,11 +52,36 @@ describe("Service is reachable", function() {
             server.setProxyUrl(undefined);
         });
 
-        it("replaces the replacement tag with an empty string", function(done) {
+        it("replaces the replacement tag with an empty string if it's all in one line", function(done) {
+            mockServer(function (req, resp) {
+                resp.end(
+                    "<!--@@begin-header@@-->" +
+                    "should be removed" +
+                    "<!--@@end-header@@—>"
+                );
+            });
+
             subject.get('/').end(function(err, res, body) {
                 expect(body).not.toContain("should be removed");
+                expect(body).toBe("");
                 done();
             });
         });
+
+        it("replaces the replacement tag with an empty string if its in multiple lines", function(done) {
+            mockServer(function (req, resp) {
+                resp.write("<!--@@begin-header@@-->");
+                resp.write("should be removed");
+                resp.end("<!--@@end-header@@—>");
+            });
+
+            subject.get('/').end(function(err, res, body) {
+                expect(body).not.toContain("should be removed");
+                expect(body).toBe("");
+                done();
+            });
+        });
+
+
     });
 });
