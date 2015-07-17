@@ -4,7 +4,8 @@
   "description": "Handlebars Template Service",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jasmine/bin/jasmine.js"
+    "test": "./node_modules/jasmine-node/bin/jasmine-node ./spec --verbose --forceexit",
+    "autotest": "./node_modules/jasmine-node/bin/jasmine-node ./spec"
   },
   "keywords": [
     "Handlebars",
@@ -22,7 +23,7 @@
     "request": "^2.58.0"
   },
   "devDependencies": {
-    "jasmine": "^2.3.1",
+    "jasmine-node": "^1.14.5",
     "server-destroy": "^1.0.1"
   }
 }
