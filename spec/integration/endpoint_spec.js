@@ -45,7 +45,6 @@ describe("Service is reachable", function() {
     });
 
     describe("There is a proxied server running with replacement tags", function() {
-        var mockedServer = 
 
         beforeEach(function() {
             server.setProxyUrl("http://localhost:3001");
@@ -87,6 +86,9 @@ describe("Service is reachable", function() {
             });
         });
 
+        it("should create a server instance", function(done) {
+            server.listen(3002, done);
+        });
 
         it("even if the proxy needs much time, the template server should respond with the allready received part", function(done) {
             mockServer(function (req, res, server) {
@@ -94,15 +96,27 @@ describe("Service is reachable", function() {
                 setTimeout(function() {
                     res.end("Some more Text");
                     server.destroy();
-                }, 3000);
+                }, 1000);
             }, true);
 
-            subject.get('/').end(function(err, res, body) {
-                var expected = "Some Text...";
-                expect(body).toBe(expected);
-                done();
+
+            var responseContent = "";
+            var request = http.request({host: 'localhost', port:"3002", path: '/' });
+            request.setTimeout(200)
+            request.on('response', function(res) {
+                res.on('data', function(chunk) {
+                    if (chunk.toString().indexOf("Some Text...") != -1) {
+                        done();
+                    }
+                });
+
+                res.on('end', function() {
+                    expect(true).toBe(false);
+                });
             });
-        });
+
+            request.end();
+        }, 1000);
 
 
     });
