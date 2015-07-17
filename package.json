@@ -18,6 +18,7 @@
     "express": "^4.13.1",
     "handlebars": "^3.0.3",
     "hippie": "^0.3.0",
+    "istanbul": "^0.3.17",
     "request": "^2.58.0"
   },
   "devDependencies": {
