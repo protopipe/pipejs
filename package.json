@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/jasmine-node/bin/jasmine-node ./spec --verbose --forceexit",
-    "autotest": "./node_modules/jasmine-node/bin/jasmine-node ./spec --color --autotest --watch ./lib"
+    "autotest": "./node_modules/jasmine-node/bin/jasmine-node ./spec --color --autotest"
   },
   "keywords": [
     "Handlebars",
