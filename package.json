@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/jasmine-node/bin/jasmine-node ./spec --verbose --forceexit",
-    "autotest": "./node_modules/jasmine-node/bin/jasmine-node ./spec"
+    "autotest": "./node_modules/jasmine-node/bin/jasmine-node ./spec --color --autotest --watch ./lib"
   },
   "keywords": [
     "Handlebars",
@@ -17,7 +17,7 @@
   "license": "BSD",
   "dependencies": {
     "express": "^4.13.1",
-    "handlebars": "^3.0.3",
+    "handlebars": "3.0.1",
     "hippie": "^0.3.0",
     "istanbul": "^0.3.17",
     "request": "^2.58.0"
