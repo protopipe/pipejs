@@ -2,9 +2,9 @@ var request = require('request'),
     hippie = require('hippie'),
     server = require('../../lib/app.js'),
     http = require('http'),
-    enableDestroy = require('server-destroy');;
+    enableDestroy = require('server-destroy');
 
-var mockServer = function(cb, dontAutoclose) {
+var mockServer = function(cb, dontAutoclose, port) {
     var oneTimeServer = http.createServer(function (req, resp) {
         cb(req, resp, oneTimeServer);
 
@@ -16,12 +16,21 @@ var mockServer = function(cb, dontAutoclose) {
     oneTimeServer.listen(3001);
 
     enableDestroy(oneTimeServer);
+};
+
+var staticFileServer = function() {
+    var mappings = {};
+
+    var staticFileServer = http.createServer(function(req, res) {
+        if (req.route in mappings) {
+            res.end(mappings[req.route]);
+        }
+    });
 }
 
 describe("Service is reachable", function() {
 
     var subject = hippie(server);
-
 
     it("Service returns positive helth object on /health", function(done) {
         subject.get('/health').end(function(err, res, body) {
@@ -118,6 +127,17 @@ describe("Service is reachable", function() {
             request.end();
         }, 1000);
 
+        describe('and a Handlebars Template to compile', function() {
+            beforeEach(function() {
+                server.setMainTemplate('http://localhost:3001/main.hbs');
+            });
+
+            afterEach(function() {
+                server.setMainTemplate(undefined);
+            });
+
+            
+        });
 
     });
 });
