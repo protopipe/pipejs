@@ -1,8 +1,13 @@
-var app = require('../../lib/app.js');
+var app = require('../../lib/app.js'),
+    request = require('request');
 
-var World = function(callback) {
-
-    callback();
+var World = function(cb) {
+    this.app = app;
+    this.currentPage = '/';
+    this.request = request;
+    this.proxiedServer = undefined;
+    this.proxiedChunk = "";
+    cb();
 }
 
 

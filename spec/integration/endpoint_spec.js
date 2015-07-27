@@ -111,9 +111,9 @@ describe("Service is reachable", function() {
 
             var responseContent = "";
             var request = http.request({host: 'localhost', port:"3002", path: '/' });
-            request.setTimeout(200)
             request.on('response', function(res) {
                 res.on('data', function(chunk) {
+                    console.log("chunk:"+chunk);
                     if (chunk.toString().indexOf("Some Text...") != -1) {
                         done();
                     }
@@ -125,7 +125,7 @@ describe("Service is reachable", function() {
             });
 
             request.end();
-        }, 1000);
+        }, 2000);
 
         describe('and a Handlebars Template to compile', function() {
             beforeEach(function() {
@@ -136,7 +136,6 @@ describe("Service is reachable", function() {
                 server.setMainTemplate(undefined);
             });
 
-            
         });
 
     });
