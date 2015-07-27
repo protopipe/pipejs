@@ -4,7 +4,8 @@
   "description": "Handlebars Template Service",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/jasmine-node/bin/jasmine-node ./spec --verbose --forceexit",
+    "test": "npm run unittest && npm run integration",
+    "unittest": "./node_modules/jasmine-node/bin/jasmine-node ./spec --verbose --forceexit",
     "integration": "./node_modules/cucumber/bin/cucumber.js -r ./features/step_definitions/common/steps.js -b",
     "autotest": "./node_modules/jasmine-node/bin/jasmine-node ./spec --color --autotest"
   },
